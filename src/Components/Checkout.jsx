@@ -5,21 +5,12 @@ import { currencyFormatter } from "../utils/formatting";
 import Input from "./Commons/Input";
 import Button from "./Commons/Button";
 import UserProgressContext from "./Store/UserProgress";
-import useHttp from "../Hooks/useHttp";
 
-const w = {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-};
 
 export default function Checkout() {
   const cartCtx = useContext(CartContext);
   const userProgressCtx = useContext(UserProgressContext);
 
-  const { data, isLoading, error, sendRequest,clearData } = useHttp(
-    "http://localhost:3000/orders",
-    w
-  );
 
   const cartTotal = cartCtx.items.reduce(
     (totalPrice, item) => totalPrice + item.quantity * item.price,
@@ -33,7 +24,6 @@ export default function Checkout() {
   function handleFinish() {
     userProgressCtx.hideCheckOut();
     cartCtx.clearCart();
-    clearData()
   }
 
   function handleSubmit(event) {
@@ -41,14 +31,7 @@ export default function Checkout() {
     const fd = new FormData(event.target);
     const customerData = Object.fromEntries(fd.entries());
 
-    sendRequest(
-      JSON.stringify({
-        order: {
-          items: cartCtx.items,
-          customer: customerData,
-        },
-      })
-    );
+    
   }
 
   let actions = (
@@ -56,30 +39,11 @@ export default function Checkout() {
       <Button type="button" onClick={handleClose} textOnly>
         Close
       </Button>
-      <Button>Sibmit Order</Button>
+      <Button onClick={handleFinish}>Sibmit Order</Button>
     </>
   );
 
-  if (isLoading) {
-    actions = <span>Sending order data...</span>;
-  }
-
-  if (data && !error) {
-    console.log(data, "   ", error);
-    return (
-      <Modal
-        open={userProgressCtx.progress === "checkout"}
-        onClose={handleFinish}
-      >
-        <h2>Success</h2>
-        <p>Your order was submitted.</p>
-        <p className="modal-actions">
-          <Button onClick={handleFinish}>Okay</Button>
-        </p>
-      </Modal>
-    );
-  }
-
+  
   return (
     <Modal open={userProgressCtx.progress === "checkout"} onClose={handleClose}>
       <form onSubmit={handleSubmit}>

@@ -2,36 +2,23 @@ import { useContext } from "react";
 import { currencyFormatter } from "../utils/formatting.js";
 import Button from "./Commons/Button.jsx";
 import CartContext from "./Store/CartContext.jsx";
-import useHttp from "../Hooks/useHttp.js";
-import Error from "./Commons/Error.jsx";
-const w = {};
+import mealss from '../available-meals.json'
 
 export default function Meals() {
   const cartCtx = useContext(CartContext);
 
-  const { data, isLoading, error } = useHttp(
-    "http://localhost:3000/meals",
-    w,
-    []
-  );
-
-  if (isLoading) {
-    return <p className="center">Fetching Meals...</p>;
-  }
-  if (error) {
-    return <Error title="Failed to fetch data" message={error} />;
-  }
-
+  
   function handleAddMealToCart(meal) {
     cartCtx.addItem(meal);
   }
 
   return (
     <ul id="meals">
-      {data.map((meal) => (
+      {mealss.map((meal) => {
+      return (
         <li key={meal.id} className="meal-item">
           <article>
-            <img src={`http://localhost:3000/${meal.image}`} alt={meal.name} />
+            <img src={`../../${meal.image}`} alt={meal.name} />
             <div>
               <h3>{meal.name}</h3>
               <p className="meal-item-price">
@@ -45,8 +32,8 @@ export default function Meals() {
               </Button>
             </p>
           </article>
-        </li>
-      ))}
+        </li>)
+      })}
     </ul>
   );
 }
