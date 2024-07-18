@@ -24,7 +24,6 @@ export default function Checkout() {
   function handleFinish() {
     userProgressCtx.hideCheckOut();
     cartCtx.clearCart();
-    alert('Your order is done.')
   }
 
   function handleSubmit(event) {
